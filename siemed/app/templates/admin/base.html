@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block brand_href %}/{% endblock %}
+{% block title %}{% if admin_section %}Администрирование{% else %}Результаты{% endif %}{% endblock %}
+{% block nav %}
+<nav class="nav">
+  <a href="/" class="{% if not admin_section %}active{% endif %}">Результаты</a>
+  {% if user.role == 'admin' %}
+  <a href="/administration" class="{% if admin_section %}active{% endif %}">Администрирование</a>
+  {% endif %}
+</nav>
+{% endblock %}
+{% block actions %}
+<form method="post" action="/logout"><button class="btn btn-line" type="submit">Выйти</button></form>
+{% endblock %}
+{% block body %}
+<div id="toast" class="alert alert-ok" style="display:none;margin:12px 24px 0"></div>
+{% if admin_section %}
+<div class="side">
+  <nav class="side-nav">
+    <a href="/administration" class="{% if request.url.path == '/administration' %}active{% endif %}">Обзор</a>
+    <a href="/lessons" class="{% if '/lessons' in request.url.path %}active{% endif %}">Занятия</a>
+    <a href="/groups" class="{% if '/groups' in request.url.path %}active{% endif %}">Группы</a>
+    <a href="/slots" class="{% if '/slots' in request.url.path %}active{% endif %}">Слоты</a>
+    <a href="/cameras" class="{% if '/cameras' in request.url.path %}active{% endif %}">Камеры</a>
+    <a href="/archive" class="{% if '/archive' in request.url.path %}active{% endif %}">Архив</a>
+    <a href="/users" class="{% if '/users' in request.url.path %}active{% endif %}">Сотрудники</a>
+    <a href="/settings" class="{% if '/settings' in request.url.path %}active{% endif %}">Параметры</a>
+    <a href="/log" class="{% if '/log' in request.url.path %}active{% endif %}">Журнал</a>
+  </nav>
+  <div>{% block admin %}{% endblock %}</div>
+</div>
+{% else %}
+<main class="wrap">{% block results %}{% block admin %}{% endblock %}{% endblock %}</main>
+{% endif %}
+{% endblock %}
+{% block scripts %}
+<script>
+try {
+  const proto = location.protocol === 'https:' ? 'wss' : 'ws';
+  const ws = new WebSocket(proto + '://' + location.host + '/ws');
+  ws.onmessage = (ev) => {
+    const d = JSON.parse(ev.data);
+    if (d.event === 'session_saved') {
+      const t = document.getElementById('toast');
+      const msg = 'Занятие завершено: ' + (d.fio || '') + ' · ' + (d.lesson || '');
+      if (t) { t.style.display = 'block'; t.textContent = msg; }
+      if (window.Notification && Notification.permission === 'granted') {
+        new Notification('SIEMED', { body: msg });
+      }
+      if (location.pathname === '/') {
+        setTimeout(() => location.reload(), 1200);
+      }
+    }
+  };
+  if (window.Notification && Notification.permission === 'default') Notification.requestPermission();
+} catch (e) {}
+</script>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "admin/base.html" %}
+{% block admin %}
+<h1>Администрирование</h1>
+<p class="lead">{{ station_name }} · свободно {{ free_gb }} ГБ</p>
+<div class="stats">
+  <div class="stat"><b>{{ groups_n }}</b><span>групп</span></div>
+  <div class="stat"><b>{{ lessons_n }}</b><span>занятий</span></div>
+  <div class="stat"><b>{{ slots_today|length }}</b><span>слотов сегодня</span></div>
+  <div class="stat"><b>{{ cams|selectattr('alive')|list|length }}/{{ cams|length }}</b><span>камер живы</span></div>
+</div>
+<div class="card">
+  <h2>Камеры</h2>
+  {% for c in cams %}
+    <p>{{ c.title }} — {% if c.alive %}<span class="pill pill-ok">онлайн</span>{% else %}<span class="pill pill-bad">{{ c.detail }}</span>{% endif %}</p>
+  {% endfor %}
+  <a class="btn btn-line" href="/cameras">Настроить</a>
+</div>
+{% endblock %}

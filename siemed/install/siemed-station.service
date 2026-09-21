@@ -1,0 +1,21 @@
+[Unit]
+Description=SIEMED Station (тьюторский пост сестринского дела)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=siemed
+Group=siemed
+WorkingDirectory=/opt/siemed
+EnvironmentFile=-/etc/siemed/station.env
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/opt/siemed/.venv/bin/python -m app
+Restart=on-failure
+RestartSec=3
+# HDMI/mpv may need the seat
+RuntimeDirectory=siemed
+SupplementaryGroups=video audio
+
+[Install]
+WantedBy=multi-user.target

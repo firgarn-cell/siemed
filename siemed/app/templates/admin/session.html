@@ -1,0 +1,38 @@
+{% extends "admin/base.html" %}
+{% block admin %}
+<h1>{{ sess.booking.slot.lesson.title }}</h1>
+<p class="lead">{{ sess.booking.fio }} · {{ sess.booking.group.name }} · код {{ sess.booking.code }}<br>
+  {{ sess.started_at.strftime('%d.%m.%Y %H:%M:%S') if sess.started_at else '—' }}
+  — {{ sess.ended_at.strftime('%H:%M:%S') if sess.ended_at else '—' }}
+</p>
+<div class="cams">
+  {% for f in sess.files %}
+  <div>
+    <p>{{ f.camera_title }}</p>
+    {% if f.missing %}
+      <div class="card">Нет записи</div>
+    {% else %}
+      <video controls preload="metadata" src="/media/{{ f.id }}"></video>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+<form method="post" action="/session/{{ sess.id }}/grade" class="card" style="margin-top:16px;max-width:480px">
+  <h2>Оценка</h2>
+  <div class="field">
+    <label>Оценка</label>
+    <select name="grade">
+      <option value="" {% if not sess.grade %}selected{% endif %}>Не выставлена</option>
+      <option value="5" {% if sess.grade == '5' %}selected{% endif %}>5</option>
+      <option value="4" {% if sess.grade == '4' %}selected{% endif %}>4</option>
+      <option value="3" {% if sess.grade == '3' %}selected{% endif %}>3</option>
+      <option value="2" {% if sess.grade == '2' %}selected{% endif %}>2</option>
+    </select>
+  </div>
+  <div class="field">
+    <label>Комментарий</label>
+    <textarea name="notes">{{ sess.notes or '' }}</textarea>
+  </div>
+  <button class="btn btn-gold" type="submit">Сохранить оценку</button>
+</form>
+{% endblock %}

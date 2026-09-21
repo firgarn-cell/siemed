@@ -1,0 +1,41 @@
+{% extends "admin/base.html" %}
+{% block admin %}
+<h1>Слоты записи</h1>
+<form class="card grid grid-2" method="post" action="/slots" style="margin-bottom:16px">
+  <div class="field"><label>Занятие</label>
+    <select name="lesson_id" required>
+      {% for l in lessons %}<option value="{{ l.id }}">{{ l.title }}</option>{% endfor %}
+    </select>
+  </div>
+  <div class="field"><label>Дата</label><input type="date" name="date" required></div>
+  <div class="field"><label>Первое время</label><input type="time" name="start_time" required></div>
+  <div class="field"><label>Сколько слотов подряд</label><input type="number" name="count" value="4" min="1" max="24"></div>
+  <div><button class="btn btn-gold" type="submit">Создать пачку</button></div>
+</form>
+<div class="card">
+  <table class="table">
+    <tr><th>Когда</th><th>Занятие</th><th>Студент</th><th></th></tr>
+    {% for s in slots %}
+    <tr>
+      <td>{{ s.starts_at.strftime('%d.%m %H:%M') }}–{{ s.ends_at.strftime('%H:%M') }}</td>
+      <td>{{ s.lesson.title }}</td>
+      <td>
+        {% if s.booking and not s.booking.cancelled_at %}
+          {{ s.booking.fio }} ({{ s.booking.group.name }}) · код {{ s.booking.code }}
+          <form method="post" action="/bookings/{{ s.booking.id }}/cancel" style="display:inline">
+            <button class="btn btn-danger" type="submit" style="height:32px;font-size:13px">Снять бронь</button>
+          </form>
+        {% elif s.closed %}закрыт
+        {% else %}свободен
+        {% endif %}
+      </td>
+      <td>
+        {% if not s.closed and (not s.booking or s.booking.cancelled_at) %}
+        <form method="post" action="/slots/{{ s.id }}/close"><button class="btn btn-line" type="submit">Закрыть</button></form>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Запись оформлена{% endblock %}
+{% block nav %}
+<nav class="nav"><a href="/">Запись</a><a href="/cancel">Отмена</a></nav>
+{% endblock %}
+{% block body %}
+<main class="wrap hero" style="max-width:640px">
+  <div class="card" style="text-align:center">
+    <p class="pill pill-gold">Запись подтверждена</p>
+    <h1>Ваш код</h1>
+    <div class="code">{{ booking.code }}</div>
+    <p class="lead">{{ booking.fio }} · {{ group.name }}<br>
+      {{ lesson.title }}<br>
+      {{ slot.starts_at.strftime('%d.%m.%Y %H:%M') }}–{{ slot.ends_at.strftime('%H:%M') }}
+    </p>
+    <p>Код введите на планшете в кабинете. Отмена на сайте — не позднее чем за {{ cancel_hours }} ч. до начала.</p>
+    <a class="btn btn-gold" href="/">Новая запись</a>
+    <a class="btn btn-line" href="/cancel">Отменить эту запись</a>
+  </div>
+</main>
+{% endblock %}

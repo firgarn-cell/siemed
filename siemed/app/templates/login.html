@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Вход{% endblock %}
+{% block nav %}{% endblock %}
+{% block body %}
+<main class="wrap hero" style="max-width:480px">
+  <h1>Вход</h1>
+  <p class="lead">Результаты занятий и администрирование станции.</p>
+  {% if error %}<div class="alert alert-err">{{ error }}</div>{% endif %}
+  <form class="card" method="post" action="/login">
+    <input type="hidden" name="next" value="{{ next }}">
+    <div class="field"><label>Логин</label><input name="login" required autocomplete="username"></div>
+    <div class="field"><label>Пароль</label><input name="password" type="password" required autocomplete="current-password"></div>
+    <button class="btn btn-gold btn-block" type="submit">Войти</button>
+  </form>
+</main>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "admin/base.html" %}
+{% block admin %}
+<h1>Архив занятий</h1>
+<form method="get" class="card" style="margin-bottom:16px;display:flex;gap:8px">
+  <input name="q" value="{{ q }}" placeholder="ФИО или группа">
+  <button class="btn btn-gold" type="submit">Найти</button>
+</form>
+<div class="card">
+  <table class="table">
+    <tr><th>Когда</th><th>Студент</th><th>Занятие</th><th>Статус</th><th></th></tr>
+    {% for s in sessions %}
+    <tr>
+      <td>{{ s.started_at.strftime('%d.%m.%Y %H:%M') if s.started_at else '—' }}</td>
+      <td>{{ s.booking.fio }} · {{ s.booking.group.name }}</td>
+      <td>{{ s.booking.slot.lesson.title }}</td>
+        <td>{% if s.grade %}<span class="pill pill-gold">{{ s.grade }}</span>{% else %}{{ s.status }}{% endif %}</td>
+      <td>
+        <a class="btn btn-line" href="/session/{{ s.id }}">Смотреть</a>
+        {% if user.role == 'admin' %}
+        <form method="post" action="/archive/{{ s.id }}/delete" style="display:inline" onsubmit="return confirm('Удалить запись безвозвратно?')">
+          <button class="btn btn-danger" type="submit">Удалить</button>
+        </form>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

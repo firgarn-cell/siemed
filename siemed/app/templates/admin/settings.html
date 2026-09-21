@@ -1,0 +1,11 @@
+{% extends "admin/base.html" %}
+{% block admin %}
+<h1>Параметры поста</h1>
+<form class="card" method="post" action="/settings" style="max-width:640px">
+  <div class="field"><label>Название станции</label><input name="station_name" value="{{ station_name }}"></div>
+  <div class="field"><label>Публичный URL (для QR)</label><input name="public_url" value="{{ public_url }}" placeholder="http://1.2.3.4:9080"></div>
+  <div class="field"><label>Отмена студентом, часов до начала</label><input type="number" name="cancel_lead_hours" value="{{ cancel_lead_hours }}" min="0"></div>
+  <div class="field"><label>Допуск прихода, минут</label><input type="number" name="slot_grace_minutes" value="{{ slot_grace_minutes }}" min="0"></div>
+  <button class="btn btn-gold" type="submit">Сохранить</button>
+</form>
+{% endblock %}

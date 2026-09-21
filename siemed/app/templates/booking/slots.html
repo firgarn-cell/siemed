@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Свободные слоты{% endblock %}
+{% block nav %}
+<nav class="nav"><a href="/">Запись</a><a href="/cancel">Отмена</a></nav>
+{% endblock %}
+{% block body %}
+<main class="wrap hero">
+  <h1>Выберите время</h1>
+  <p class="lead">{{ group.name }} · {{ fio }}</p>
+  {% if not days %}
+  <div class="alert">Свободных слотов сейчас нет. Зайдите позже или обратитесь к администратору.</div>
+  {% endif %}
+  {% for day in days %}
+  <section class="card" style="margin-bottom:16px">
+    <h2>{{ day[8:10] }}.{{ day[5:7] }}.{{ day[0:4] }}</h2>
+    <div class="grid" style="grid-template-columns: repeat(auto-fill, minmax(220px, 1fr))">
+      {% for s in by_day[day] %}
+      <form method="post" action="/confirm">
+        <input type="hidden" name="group_id" value="{{ group.id }}">
+        <input type="hidden" name="fio" value="{{ fio }}">
+        <input type="hidden" name="slot_id" value="{{ s.id }}">
+        <button class="btn btn-line btn-block" type="submit" style="height:auto;padding:16px;border-radius:18px;text-align:left">
+          <strong>{{ s.starts_at.strftime('%H:%M') }}–{{ s.ends_at.strftime('%H:%M') }}</strong><br>
+          <span style="color:var(--muted);font-size:13px">{{ s.lesson.title }}</span>
+        </button>
+      </form>
+      {% endfor %}
+    </div>
+  </section>
+  {% endfor %}
+</main>
+{% endblock %}

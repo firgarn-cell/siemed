@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}SIEMED Station{% endblock %}</title>
+  <link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body>
+  {% block chrome %}
+  <header class="top">
+    <a class="brand" href="{% block brand_href %}/{% endblock %}">
+      <div class="mark">СИЭ</div>
+      <div>
+        <strong>СИЭУиП</strong>
+        <span>{{ station_name or "SIEMED Station" }}</span>
+      </div>
+    </a>
+    {% block nav %}{% endblock %}
+    <div class="actions">{% block actions %}{% endblock %}</div>
+  </header>
+  {% endblock %}
+  {% block body %}{% endblock %}
+  <div class="footer">Сургутский институт экономики, управления и права · SIEMED Station</div>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

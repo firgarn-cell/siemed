@@ -1,0 +1,27 @@
+{% extends "admin/base.html" %}
+{% block admin %}
+<h1>Результаты</h1>
+<form method="get" class="card" style="margin-bottom:16px;display:flex;gap:8px">
+  <input name="q" value="{{ q or '' }}" placeholder="ФИО или группа">
+  <button class="btn btn-gold" type="submit">Найти</button>
+</form>
+<div class="card">
+  <table class="table">
+    <tr><th>Когда</th><th>Студент</th><th>Занятие</th><th>Оценка</th><th></th></tr>
+    {% for s in sessions %}
+    <tr>
+      <td>{{ s.ended_at.strftime('%d.%m %H:%M') if s.ended_at else (s.started_at.strftime('%d.%m %H:%M') if s.started_at else '—') }}</td>
+      <td>{{ s.booking.fio }} · {{ s.booking.group.name }}</td>
+      <td>{{ s.booking.slot.lesson.title }}</td>
+      <td>
+        {% if s.grade %}<span class="pill pill-gold">{{ s.grade }}</span>
+        {% else %}<span class="pill">нет оценки</span>{% endif %}
+      </td>
+      <td><a class="btn btn-gold" href="/session/{{ s.id }}">Смотреть</a></td>
+    </tr>
+    {% else %}
+    <tr><td colspan="5">Пока пусто</td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

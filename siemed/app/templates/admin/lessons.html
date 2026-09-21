@@ -1,0 +1,42 @@
+{% extends "admin/base.html" %}
+{% block admin %}
+<h1>Занятия</h1>
+<div class="card" style="margin-bottom:16px">
+  <h2>Новое занятие</h2>
+  <form method="post" action="/lessons" enctype="multipart/form-data" class="grid grid-2">
+    <div class="field"><label>Код</label><input name="code" placeholder="NSG-AD-01"></div>
+    <div class="field"><label>Название</label><input name="title" required placeholder="Измерение артериального давления"></div>
+    <div class="field" style="grid-column:1/-1"><label>Описание</label><textarea name="description"></textarea></div>
+    <div class="field"><label>Лимит практики, мин</label><input name="practice_limit_min" type="number" value="15"></div>
+    <div class="field"><label>Длина слота, мин</label><input name="slot_minutes" type="number" value="30"></div>
+    <div class="field"><label>Видео MP4</label><input name="video" type="file" accept="video/mp4"></div>
+    <div class="field"><label>Опубликовать</label><select name="published"><option value="1">Да</option><option value="">Нет</option></select></div>
+    <div style="grid-column:1/-1"><button class="btn btn-gold" type="submit">Сохранить</button></div>
+  </form>
+</div>
+<div class="card">
+  <table class="table">
+    <tr><th>Код</th><th>Название</th><th>Видео</th><th>Статус</th><th></th></tr>
+    {% for l in lessons %}
+    <tr>
+      <td>{{ l.code }}</td>
+      <td>{{ l.title }}</td>
+      <td>{% if l.video_path %}есть{% else %}нет{% endif %}</td>
+      <td>{% if l.published %}<span class="pill pill-ok">открыто</span>{% else %}<span class="pill">скрыто</span>{% endif %}</td>
+      <td>
+        <form method="post" action="/lessons" enctype="multipart/form-data" style="display:flex;gap:8px;align-items:end">
+          <input type="hidden" name="lesson_id" value="{{ l.id }}">
+          <input type="hidden" name="code" value="{{ l.code }}">
+          <input type="hidden" name="title" value="{{ l.title }}">
+          <input type="hidden" name="description" value="{{ l.description }}">
+          <input type="hidden" name="practice_limit_min" value="{{ l.practice_limit_min }}">
+          <input type="hidden" name="slot_minutes" value="{{ l.slot_minutes }}">
+          <input type="hidden" name="published" value="{% if l.published %}{% else %}1{% endif %}">
+          <button class="btn btn-line" type="submit">{% if l.published %}Скрыть{% else %}Опубликовать{% endif %}</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

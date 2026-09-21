@@ -1,0 +1,17 @@
+{% extends "admin/base.html" %}
+{% block admin %}
+<h1>Журнал</h1>
+<div class="card">
+  <table class="table">
+    <tr><th>Время</th><th>Кто</th><th>Действие</th><th>Детали</th></tr>
+    {% for l in logs %}
+    <tr>
+      <td>{{ l.created_at.strftime('%d.%m %H:%M:%S') }}</td>
+      <td>{{ l.actor }}</td>
+      <td>{{ l.action }}</td>
+      <td>{{ l.detail }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

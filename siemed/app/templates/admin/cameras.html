@@ -1,0 +1,30 @@
+{% extends "admin/base.html" %}
+{% block admin %}
+<h1>Камеры</h1>
+{% for c in cameras %}
+{% set st = statuses.get(c.key) %}
+<form class="card" method="post" action="/cameras" style="margin-bottom:12px">
+  <input type="hidden" name="cam_id" value="{{ c.id }}">
+  <h2>{{ c.key }} {% if st and st.alive %}<span class="pill pill-ok">онлайн</span>{% else %}<span class="pill pill-bad">{{ st.detail if st else 'нет проверки' }}</span>{% endif %}</h2>
+  <div class="grid grid-2">
+    <div class="field"><label>Название ракурса</label><input name="title" value="{{ c.title }}"></div>
+    <div class="field"><label>Режим записи</label>
+      <select name="record_mode">
+        <option value="practice" {% if c.record_mode != 'off' %}selected{% endif %}>После начала практики</option>
+        <option value="off" {% if c.record_mode == 'off' %}selected{% endif %}>Не записывать</option>
+      </select>
+    </div>
+    <div class="field"><label>Логин</label><input name="cam_user" value="{{ c.user }}" autocomplete="off"></div>
+    <div class="field"><label>Пароль</label><input name="cam_password" type="password" value="{{ c.password }}" autocomplete="new-password"></div>
+    <div class="field" style="grid-column:1/-1"><label>RTSP</label><input name="rtsp" value="{{ c.rtsp }}"></div>
+    <div class="field"><label>Камера</label>
+      <select name="enabled">
+        <option value="1" {% if c.enabled %}selected{% endif %}>Включена</option>
+        <option value="" {% if not c.enabled %}selected{% endif %}>Выключена</option>
+      </select>
+    </div>
+  </div>
+  <button class="btn btn-gold" type="submit">Сохранить</button>
+</form>
+{% endfor %}
+{% endblock %}

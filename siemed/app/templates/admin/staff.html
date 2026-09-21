@@ -1,0 +1,29 @@
+{% extends "admin/base.html" %}
+{% block admin %}
+<h1>Сотрудники</h1>
+<form class="card grid grid-2" method="post" action="/users" style="margin-bottom:16px">
+  <div class="field"><label>Логин</label><input name="login" required></div>
+  <div class="field"><label>Имя</label><input name="name"></div>
+  <div class="field"><label>Пароль</label><input name="password" type="password" required></div>
+  <div class="field"><label>Роль</label>
+    <select name="role"><option value="staff">Ответственный</option><option value="admin">Администратор</option></select>
+  </div>
+  <div><button class="btn btn-gold" type="submit">Добавить</button></div>
+</form>
+<div class="card">
+  <table class="table">
+    <tr><th>Логин</th><th>Имя</th><th>Роль</th><th>Статус</th><th></th></tr>
+    {% for s in staff %}
+    <tr>
+      <td>{{ s.login }}</td><td>{{ s.name }}</td><td>{{ s.role }}</td>
+      <td>{% if s.active %}активен{% else %}выключен{% endif %}</td>
+      <td>
+        {% if s.id != user.id %}
+        <form method="post" action="/users/{{ s.id }}/toggle"><button class="btn btn-line" type="submit">Вкл/выкл</button></form>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

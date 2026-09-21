@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Пост{% endblock %}
+{% block chrome %}{% endblock %}
+{% block body %}
+<div class="kiosk">
+  <div class="brand" style="justify-content:center;margin:16px 0 24px">
+    <div class="mark">СИЭ</div>
+    <div><strong>СИЭУиП</strong><span>{{ station_name }}</span></div>
+  </div>
+
+  {% if error %}<div class="alert alert-err">{{ error }}</div>{% endif %}
+  {% if done %}<div class="alert alert-ok">Занятие сохранено. Можете освободить пост.</div>{% endif %}
+
+  {% if runtime.phase == 'idle' %}
+    <h1>Введите код записи</h1>
+    <form method="post" action="/enter" class="card">
+      <div class="field"><label>Код</label><input name="code" placeholder="AB12CD" style="text-transform:uppercase;font-size:28px;height:64px;text-align:center;letter-spacing:.2em"></div>
+      <p style="text-align:center;color:var(--muted)">или</p>
+      <div class="field">
+        <label>Группа</label>
+        <select name="group_id">
+          <option value="">—</option>
+          {% for g in groups %}<option value="{{ g.id }}">{{ g.name }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="field"><label>ФИО</label><input name="fio"></div>
+      <button class="btn btn-gold btn-xl" type="submit">Начать</button>
+    </form>
+  {% elif runtime.phase == 'instruction' %}
+    <h1>Идёт инструктаж</h1>
+    <p class="lead" style="text-align:center">Смотрите эталон на телевизоре.<br>{{ booking.slot.lesson.title }}<br>{{ booking.fio }}</p>
+    {% if not player_ready %}
+    <form method="post" action="/video-done">
+      <button class="btn btn-gold btn-xl" type="submit">Видео просмотрено</button>
+    </form>
+    <p class="lead" style="text-align:center">На этой станции нет mpv — для наладки отметьте окончание вручную.</p>
+    {% else %}
+    <p class="lead" style="text-align:center">После окончания ролика появятся кнопки занятия.</p>
+    {% endif %}
+  {% elif runtime.phase == 'choice' or force_choice %}
+    <h1>{{ booking.slot.lesson.title }}</h1>
+    <p class="lead" style="text-align:center">{{ booking.fio }} · {{ booking.group.name }}</p>
+    <form method="post" action="/start" style="margin-bottom:12px">
+      <button class="btn btn-gold btn-xl" type="submit">Приступить к занятию</button>
+    </form>
+    <form method="post" action="/replay" style="margin-bottom:12px">
+      <button class="btn btn-line btn-xl" type="submit">Просмотреть видео ещё раз</button>
+    </form>
+    <form method="post" action="/leave">
+      <button class="btn btn-danger btn-xl" type="submit">Завершить занятие и уйти</button>
+    </form>
+  {% elif runtime.phase == 'practice' %}
+    <h1>Идёт практика</h1>
+    <p class="lead" style="text-align:center">{{ booking.slot.lesson.title }}<br>{{ booking.fio }}</p>
+    <div class="timer" id="timer">{{ remain or 0 }}</div>
+    <form method="post" action="/finish">
+      <button class="btn btn-dark btn-xl" type="submit">Завершить</button>
+    </form>
+  {% endif %}
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+async function tick() {
+  try {
+    const r = await fetch('/poll');
+    const d = await r.json();
+    if (d.phase === 'choice' && {{ 'true' if runtime.phase == 'instruction' else 'false' }}) {
+      location.reload();
+    }
+    if (d.remain != null) {
+      const el = document.getElementById('timer');
+      if (el) {
+        const m = Math.floor(d.remain / 60);
+        const s = d.remain % 60;
+        el.textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+      }
+      if (d.remain <= 0) location.reload();
+    }
+  } catch (e) {}
+}
+setInterval(tick, 1000);
+tick();
+</script>
+{% endblock %}

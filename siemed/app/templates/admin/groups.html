@@ -1,0 +1,27 @@
+{% extends "admin/base.html" %}
+{% block admin %}
+<h1>Группы</h1>
+<form class="card" method="post" action="/groups" style="max-width:480px;margin-bottom:16px">
+  <div class="field"><label>Название группы</label><input name="name" required placeholder="11 СД"></div>
+  <button class="btn btn-gold" type="submit">Добавить</button>
+</form>
+<div class="card">
+  <table class="table">
+    <tr><th>Группа</th><th>Статус</th><th></th></tr>
+    {% for g in groups %}
+    <tr>
+      <td>{{ g.name }}</td>
+      <td>{% if g.hidden %}скрыта{% else %}видна{% endif %}</td>
+      <td>
+        <form method="post" action="/groups">
+          <input type="hidden" name="group_id" value="{{ g.id }}">
+          <input type="hidden" name="name" value="{{ g.name }}">
+          <input type="hidden" name="hidden" value="{% if g.hidden %}{% else %}1{% endif %}">
+          <button class="btn btn-line" type="submit">{% if g.hidden %}Показать{% else %}Скрыть{% endif %}</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}
